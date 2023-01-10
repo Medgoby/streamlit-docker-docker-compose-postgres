@@ -3,6 +3,17 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+*.env
+__pycache__/*
+*.DS_store
+.idea/*
+.ipynb_checkpoints/*
+*.pem
+
+.env_file
+env_file
+*.env_file
+
 # C extensions
 *.so
 
