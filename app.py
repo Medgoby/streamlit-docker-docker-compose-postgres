@@ -5,8 +5,20 @@ import content
 import streamlit as st
 import numpy as np
 import pandas as pd
-from dtreeviz.trees import *
-from sklearn.datasets import load_boston
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import export_graphviz
+import seaborn as sns
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.tree import DecisionTreeClassifier
+from sklearn import tree
+#from dtreeviz.trees import *
+#from dtreeviz.trees import dtreeviz
+
+#from sklearn.datasets import load_boston
+#from sklearn.datasets import load_boston
+
 from sklearn.tree import DecisionTreeRegressor
 import psycopg2
 from dotenv import find_dotenv, load_dotenv
@@ -17,10 +29,10 @@ import base64
 
 @st.cache()
 def load_data():
-    boston = load_boston()
-    X = boston.data
-    y = boston.target * 10_000
-    feature_names = boston.feature_names
+    boston = pd.read_csv('./boston.csv')
+    X = boston.loc[:,~boston.columns.isin(['PRICE'])]
+    y=boston['PRICE'].to_frame()
+    feature_names = boston.columns
     return X, y, feature_names
 
 @st.cache()
@@ -43,7 +55,11 @@ def render_svg(svg):
     html = r'<img src="data:image/svg+xml;base64,%s"/>' % b64
     st.write(html, unsafe_allow_html=True)
 
-
+def get_dt_graph(dt_classifier):
+    fig = plt.figure(figsize=(25,20))
+    _ = tree.plot_tree(dt_classifier,
+                       feature_names=X.columns,
+                       filled=True)
 
 if __name__ == "__main__":
     ### loading things up
@@ -76,15 +92,16 @@ if __name__ == "__main__":
                          step=.1)
     new_observation = np.array([0, 0, 0, 0, 0, RM, 0, 0, 0, 0, 0, 0, LSTAT])
 
+    viz = get_dt_graph(dtree)
     # viz the predictions path
-    viz = dtreeviz(dtree,
-               X,
-               y,
-               target_name='price',
-               orientation ='LR',  # left-right orientation
-               feature_names=feature_names,
-               X=new_observation)  # need to give single observation for prediction
-    viz.save("images/prediction_path.svg")
+    #viz = dtreeviz(dtree,
+    #           X,
+    #           y,
+    #           target_name='price',
+    #           orientation ='LR',  # left-right orientation
+    #           feature_names=feature_names,
+    #           X=new_observation)  # need to give single observation for prediction
+    #viz.save("images/prediction_path.svg")
 
     # read in svg prediction path and display
     with open("images/prediction_path.svg", "r") as f:

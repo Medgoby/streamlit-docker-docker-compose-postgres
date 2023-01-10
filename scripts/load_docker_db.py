@@ -1,6 +1,8 @@
 import psycopg2
 from sklearn.datasets import load_boston
 import pandas as pd
+import sqlalchemy 
+
 from dotenv import find_dotenv, load_dotenv
 import os
 
@@ -12,11 +14,18 @@ user = os.getenv("POSTGRES_USER")
 password = os.getenv("POSTGRES_PASSWORD")
 
 # loading and saving boston.csv
-boston = load_boston()
-X = pd.DataFrame(boston.data, columns=boston.feature_names)
-y = pd.DataFrame(boston.target, columns=["PRICE"])
-df = pd.concat([X, y], axis=1)
-df.to_csv("boston.csv", index=False)
+
+boston = pd.read_csv('./boston.csv')
+#X = boston.loc[:,~boston.columns.isin(['PRICE'])]
+#y=boston['PRICE'].to_frame()
+#feature_names = boston.columns
+#boston = load_boston()
+#X = pd.DataFrame(boston.data, columns=boston.feature_names)
+#y = pd.DataFrame(boston.target, columns=["PRICE"])
+#df = pd.concat([X, y], axis=1)
+#df.to_csv("boston.csv", index=False)
+df = pd.read_csv('./boston.csv')
+
 
 conn = psycopg2.connect(host='postgres',
                        port='5432',
